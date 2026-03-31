@@ -6,39 +6,51 @@ const DONROI_IMG = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX
 
 const STYLE_PROMPT = `Sos Don Roi — inversor extremo ficticio que enseña finanzas personales a gamers jóvenes de Argentina (18-28) sin ahorros. Escribís para OLAgg, comunidad web3 gaming.
 
-VOZ: Directo, irreverente, gracioso. Español argentino rioplatense (vos, sos, hacé, etc). Frases cortas. Sin jerga financiera compleja.
+VOZ: Directo, irreverente, gracioso. Español argentino rioplatense (vos, sos, hacé, tenés, etc). Frases cortas. Sin jerga financiera compleja. Analogías con gaming y cultura pop.
 FRASES ICÓNICAS: "Los números no mienten", "Hacé las cuentas", "patrimonio > todo"
 
-4 REGLAS (siempre incluirlas todas, numeradas, en negrita):
+FILOSOFÍA CENTRAL DE DON ROI (siempre presente, especialmente en artículos sobre crisis/noticias):
+- El horizonte temporal lo es todo. El que piensa a largo plazo gana siempre.
+- Fondo de emergencia (3 meses de gastos) = el escudo. Con eso cubierto, el resto se invierte a largo plazo y no se toca.
+- Inversión recurrente = la clave. Seguir comprando en las caídas baja el precio promedio.
+- Las crisis y correcciones NO son el enemigo — son oportunidades de comprar más barato. Los que piensan a largo plazo FESTEJAN las correcciones porque acumulan a mejores precios.
+- El inversor a largo plazo que ahorra de forma recurrente termina con mejores rendimientos que el que intenta "timing" el mercado.
+
+4 REGLAS (siempre incluirlas, numeradas, en negrita):
 1. Gastá menos de lo que ganás. ¿No podés gastar menos? Entonces tenés que ganar más.
 2. Ahorrá e invertí PRIMERO cada mes, antes que cualquier otra cosa.
 3. Aumentá ese porcentaje con el tiempo. Objetivo: 10-20% de tus ingresos.
 4. Con el resto: viví. La vida pasa volando.
 
-ESTRUCTURA DEL ARTÍCULO (máx 400 palabras en el campo post):
-- Hook: 2 párrafos cortos e impactantes
-- ## Sección contextual: explicación simple con analogía graciosa
+ESTRUCTURA DEL ARTÍCULO:
+- Hook potente: 2-3 párrafos cortos que enganchen desde el minuto 0
+- ## Sección contextual: explicá el tema con analogía simple y graciosa
+- ## Por qué los que saben no entran en pánico: desarrollá la filosofía de largo plazo, fondo de emergencia, inversión recurrente como ventaja en crisis
 - ## La lección de Don Roi: las 4 reglas numeradas en negrita
-- ## El tip de la semana: acción concreta, hacible hoy
-- Cierre: 1 frase en negrita sin heading, memorable
+- ## El tip de la semana: acción concreta y hacible hoy
+- Cierre: 1 frase en negrita sin heading, memorable, que quede dando vueltas
 - Donde irían imágenes poné: [IMAGEN: descripción detallada de qué mostrar]
-- Terminá con: "👉 Jugá en donroi.app | 🗳️ Votación: [pregunta relevante con 3 opciones]"
+- Terminá con: "👉 Jugá la trivia en olagg.io/es/aprende/donroi | 🗳️ Votación: [pregunta relevante con 3 opciones]"
+- Largo: entre 450 y 550 palabras (más largo que el promedio, más profundidad)
+
+TRIVIA — REGLAS CRÍTICAS:
+- Las 10 preguntas deben cubrir distintos aspectos del tema y de finanzas personales generales
+- Las respuestas correctas DEBEN estar distribuidas entre A, B, C y D de forma variada — NUNCA todas en A, ni todas en la misma letra
+- Distribución ideal: ~2-3 respuestas por letra, mezcladas sin patrón predecible
+- Las opciones incorrectas deben ser plausibles, no obvias
 
 OUTPUT: Devolvé SOLO un objeto JSON válido. Sin markdown, sin backticks, sin texto antes o después.
 Campos exactos:
 {
   "title": "max 60 chars, empieza con keyword, clickbait honesto",
-  "meta": "140-160 chars, empieza con keyword, explica qué aprende el lector",
-  "post": "artículo completo en markdown con los bloques [IMAGEN: ...] incluidos",
+  "meta": "140-160 chars, empieza con keyword",
+  "post": "artículo completo en markdown con bloques [IMAGEN: ...] incluidos",
   "image_descriptions": ["descripción imagen 1", "descripción imagen 2"],
-  "tweets": [
-    "tweet 1 en español argentino, voz Don Roi, max 280 chars, con #DonRoi #OLAgg",
-    "tweet 2", "tweet 3", "tweet 4", "tweet 5"
-  ],
-  "trivia": [{"question":"...","options":["A)...","B)...","C)...","D)..."],"answer":"A","explanation":"..."}]
+  "tweets": ["tweet 1 español argentino voz Don Roi max 280 chars #DonRoi #OLAgg", "tweet 2", "tweet 3", "tweet 4", "tweet 5"],
+  "trivia": [{"question":"...","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"A","explanation":"..."}]
 }`;
 
-const TOPICS = [
+const ALL_TOPICS = [
   { emoji: "🎮", label: "Gamers profesionales y su plata" },
   { emoji: "💸", label: "La guerra entre USA e Irán y tu billetera" },
   { emoji: "🍕", label: "El delivery te roba la jubilación" },
@@ -47,14 +59,34 @@ const TOPICS = [
   { emoji: "💳", label: "Las tarjetas de crédito son el enemigo" },
   { emoji: "📈", label: "El dólar sube — qué hacés con tus ahorros" },
   { emoji: "🏠", label: "¿Tiene sentido comprar casa en Latam hoy?" },
+  { emoji: "☕", label: "El café de todos los días vs invertir ese dinero" },
+  { emoji: "📱", label: "Cuánto te cuesta el celular nuevo en términos reales" },
+  { emoji: "🎰", label: "Las apuestas deportivas son el casino de los gamers" },
+  { emoji: "💰", label: "Qué es el interés compuesto y por qué te cambia la vida" },
+  { emoji: "🧾", label: "Impuestos: lo que nadie te enseñó en el colegio" },
+  { emoji: "🏦", label: "Por qué el banco es tu peor amigo financiero" },
+  { emoji: "📉", label: "Qué hacer cuando tu país entra en recesión" },
+  { emoji: "🎮", label: "Cómo los streamers de Twitch manejan sus ingresos" },
+  { emoji: "🌍", label: "Dolarizarte desde Latam: cómo y por qué" },
+  { emoji: "🚀", label: "DeFi para principiantes: oportunidad real o trampa" },
+  { emoji: "💡", label: "Freelancing: cómo cobrar más y ahorrar mejor" },
+  { emoji: "🎁", label: "El Black Friday y la ilusión de los descuentos" },
+  { emoji: "📊", label: "ETFs: la inversión más aburrida y más rentable" },
+  { emoji: "🏋️", label: "El gym caro vs invertir esa plata — hacé las cuentas" },
+  { emoji: "🎓", label: "¿Vale la pena pagar una carrera universitaria?" },
+  { emoji: "🛵", label: "Rappi, PedidosYa y el mito del ingreso extra" },
 ];
+
+const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+const pickTopics = () => shuffle(ALL_TOPICS).slice(0, 8);
 
 const LOADING_MSGS = [
   "Don Roi abrió la notebook...",
   "Revisando los números del mundo...",
-  "Escribiendo sin filtro...",
-  "Traduciendo (porque Brasil es grande)...",
-  "Aplicando el vibes check final...",
+  "Escribiendo el artículo sin filtro...",
+  "Generando tweets para X...",
+  "Preparando trivia para donroi.app...",
+  "Escribiendo el guión del video...",
 ];
 
 export default function App() {
@@ -69,60 +101,163 @@ export default function App() {
   const [modal, setModal] = useState(null); // null | "json"
   const [copyLabel, setCopyLabel] = useState("Copiar todo");
   const [exportTab, setExportTab]   = useState("json");
+  const [debugLog, setDebugLog]     = useState([]);
+  const [topics, setTopics]         = useState(() => pickTopics());
+  const refreshTopics = () => setTopics(pickTopics());
   const [showRefine, setShowRefine] = useState(false);
   const [feedback, setFeedback]     = useState("");
   const [refining, setRefining]     = useState(false);
   const [refineError, setRefineError] = useState("");
 
   // ── Helpers ───────────────────────────────────────────────
-  const callClaude = async (messages, max_tokens = 2000) => {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens, system: STYLE_PROMPT, messages }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const callClaude = async (messages, max_tokens = 2000, useSystem = true) => {
+    const body = { model: "claude-sonnet-4-20250514", max_tokens, messages };
+    if (useSystem) body.system = STYLE_PROMPT;
+    let res;
+    try {
+      res = await fetch("/api/claude", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch(networkErr) {
+      throw new Error("No se pudo conectar con /api/claude — " + networkErr.message);
+    }
+    if (!res.ok) {
+      let errBody = "";
+      try { errBody = await res.text(); } catch(e) {}
+      throw new Error(`HTTP ${res.status} — ${errBody.slice(0,120)}`);
+    }
     const data = await res.json();
     return (data.content||[]).map(b=>b.text||"").join("").trim();
   };
 
-  const parseJSON = (raw) => {
-    const cleaned = raw.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/\s*```$/i,"").trim();
-    const s = cleaned.indexOf("{"), e = cleaned.lastIndexOf("}");
-    if (s===-1||e===-1) throw new Error("No JSON found");
-    return JSON.parse(cleaned.slice(s, e+1));
+  const parseJSON = (raw, label) => {
+    setDebugLog(prev => [...prev, { label: label||"?", preview: raw.slice(0,120) }]);
+    // Strip markdown fences
+    let cleaned = raw.replace(/```json\s*/gi,"").replace(/```\s*/gi,"").trim();
+    const s = cleaned.indexOf("{");
+    const e = cleaned.lastIndexOf("}");
+    if (s === -1 || e === -1) {
+      throw new Error("No JSON found en paso: " + (label||"?") + " — respuesta: " + raw.slice(0,80));
+    }
+    const jsonStr = cleaned.slice(s, e + 1);
+    // Attempt 1: direct parse
+    try { return JSON.parse(jsonStr); } catch(e1) {}
+    // Attempt 2: fix trailing commas
+    try { return JSON.parse(jsonStr.replace(/,\s*}/g,"}").replace(/,\s*]/g,"]")); } catch(e2) {}
+    // Attempt 3: extract only known top-level fields using regex (fallback for truncated JSON)
+    try {
+      const result = {};
+      const fieldRe = /"(title|meta|post|image_descriptions|tweets|trivia|video_script|hook|story|insight|cta|full_script)"\s*:\s*/g;
+      let m;
+      while ((m = fieldRe.exec(jsonStr)) !== null) {
+        const key = m[1];
+        const afterKey = jsonStr.slice(m.index + m[0].length);
+        if (afterKey.startsWith('"')) {
+          // String value — find closing quote accounting for escapes
+          let val = "", i = 1;
+          while (i < afterKey.length) {
+            if (afterKey[i] === '\\') { val += afterKey[i] + afterKey[i+1]; i += 2; }
+            else if (afterKey[i] === '"') break;
+            else { val += afterKey[i]; i++; }
+          }
+          result[key] = val;
+        } else if (afterKey.startsWith('[')) {
+          // Array — try to grab it
+          let depth = 0, i = 0, arr = "";
+          for (; i < afterKey.length; i++) {
+            if (afterKey[i]==='[') depth++;
+            else if (afterKey[i]===']') { depth--; if(depth===0){arr=afterKey.slice(0,i+1);break;} }
+          }
+          try { result[key] = JSON.parse(arr); } catch(e) { result[key] = []; }
+        }
+      }
+      if (Object.keys(result).length > 0) return result;
+    } catch(e3) {}
+    throw new Error("JSON inválido en paso: " + (label||"?") + " — inicio: " + jsonStr.slice(0,80));
   };
 
   // ── Generate ──────────────────────────────────────────────
   const generate = async () => {
     if (!input.trim()) return;
-    setLoading(true); setError(""); setResult(null); setModal(null);
+    setLoading(true); setError(""); setResult(null); setModal(null); setDebugLog([]);
 
-    const topic = inputType === "url"
-      ? `Reaccioná a esta noticia: ${input}`
-      : `Tema: "${input}"`;
+    // Clean input — separate from all prompts to avoid injection
+    const topic = input.trim();
+    const contextMsg = inputType === "url"
+      ? "Noticia/URL para reaccionar: " + topic
+      : "Tema del artículo: " + topic;
 
     try {
-      // Step 1: Article only
+      // ── Step 1: Article — usando delimitadores en lugar de JSON ───────
       setLoadingMsg("Don Roi escribiendo el artículo...");
-      const raw1 = await callClaude([{ role:"user", content:
-        `${topic}\n\nEscribí el artículo de Don Roi en español rioplatense. Máximo 350 palabras.\nDevolvé un JSON con SOLO estos campos: title (max 60 chars), meta (140-160 chars), post (markdown), image_descriptions (array 2 strings).\nSin backticks, sin texto extra, SOLO JSON válido.`
-      }], 2000);
-      const part1 = parseJSON(raw1);
+      const raw1 = await callClaude([
+        { role:"user", content: contextMsg + `
 
-      // Step 2: Tweets
+Escribí el artículo de Don Roi. Usá EXACTAMENTE este formato con los delimitadores (no uses JSON):
+
+<<<TITLE>>>
+[título aquí, max 60 chars]
+<<<META>>>
+[meta description aquí, 140-160 chars]
+<<<POST>>>
+[artículo completo en markdown aquí]
+<<<IMAGES>>>
+[descripción imagen 1]
+|||
+[descripción imagen 2]
+<<<END>>>` }
+      ], 4000);
+
+      // Parse delimited format — immune to special chars
+      const parseDelimited = (text) => {
+        const get = (tag) => {
+          const re = new RegExp("<<<" + tag + ">>>\\s*([\\s\\S]*?)(?=<<<|$)");
+          const m = text.match(re);
+          return m ? m[1].trim() : "";
+        };
+        const images = get("IMAGES").split("|||").map(s => s.trim()).filter(Boolean);
+        return {
+          title: get("TITLE"),
+          meta: get("META"),
+          post: get("POST"),
+          image_descriptions: images.length ? images : ["Imagen ilustrativa", "Imagen ilustrativa"],
+        };
+      };
+      const part1 = parseDelimited(raw1);
+      setDebugLog(prev => [...prev, { label: "artículo", preview: "title: " + part1.title }]);
+      if (!part1.title || !part1.post) throw new Error("Respuesta del artículo incompleta — " + raw1.slice(0,100));
+
+      // ── Step 2: Tweets
       setLoadingMsg("Generando tweets para X...");
-      const raw2 = await callClaude([{ role:"user", content:
-        `Basándote en este artículo de Don Roi sobre "${part1.title}":\n${part1.post}\n\nCreá 5 tweets en español argentino con voz de Don Roi. Cada uno max 260 chars, con #DonRoi #OLAgg.\nDevolvé un JSON con SOLO este campo: tweets (array de 5 strings).\nSin backticks, sin texto extra, SOLO JSON válido.`
-      }], 1200);
-      const part2 = parseJSON(raw2);
+      const raw2 = await callClaude([
+        { role:"user", content: `Creá 5 tweets en español argentino sobre este tema: "${part1.title}". Tono irreverente Don Roi. Max 260 chars cada uno. Incluí #DonRoi #OLAgg.
 
-      // Step 3: Trivia
-      setLoadingMsg("Generando trivia para donroi.app...");
-      const raw3 = await callClaude([{ role:"user", content:
-        `Tema del artículo: "${part1.title}". Creá 10 preguntas de trivia sobre finanzas personales relacionadas al tema. Respuestas cortas (max 8 palabras c/u). Devolvé SOLO este JSON válido sin backticks: {"trivia":[{"question":"...","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"A","explanation":"..."},...]}`
-      }], 3000);
-      const part3 = parseJSON(raw3);
+Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin backticks:
+{"tweets":["tweet1","tweet2","tweet3","tweet4","tweet5"]}` }
+      ], 1000, false);
+      const part2 = parseJSON(raw2, "tweets");
+
+      // ── Step 3: Trivia
+      setLoadingMsg("Generando trivia...");
+      const raw3 = await callClaude([
+        { role:"user", content: `Creá 10 preguntas de trivia sobre finanzas personales relacionadas a: "${part1.title}". Opciones cortas (max 6 palabras). Distribuí respuestas correctas entre A, B, C y D (no más de 3 en la misma letra).
+
+Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin backticks:
+{"trivia":[{"question":"...","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"A","explanation":"..."}]}` }
+      ], 2500, false);
+      const part3 = parseJSON(raw3, "trivia");
+
+      // ── Step 4: Video script
+      setLoadingMsg("Escribiendo guión de video...");
+      const raw4 = await callClaude([
+        { role:"user", content: `Guión video viral 30 segundos para TikTok/Reels en español argentino sobre: "${part1.title}". Voz Don Roi.
+
+Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin backticks:
+{"video_script":{"hook":"0-3s gancho aquí","story":"3-20s historia aquí","insight":"20-25s aprendizaje aquí","cta":"25-30s llamado a la acción aquí","full_script":"guión completo aquí"}}` }
+      ], 1000, false);
+      const part4 = parseJSON(raw4, "video");
 
       const assembled = {
         title:              part1.title              || "",
@@ -131,18 +266,20 @@ export default function App() {
         image_descriptions: part1.image_descriptions || [],
         tweets:             part2.tweets             || [],
         trivia:             part3.trivia             || [],
-        url: "https://olagg.io",
+        video_script:       part4.video_script       || null,
+        url: "https://olagg.io/es/aprende/donroi",
       };
 
       if (!assembled.title || !assembled.post) throw new Error("Faltan campos en la respuesta");
       setResult(assembled);
       setLoadingMsg("");
     } catch(e) {
-      setError(`Error: ${e.message}`);
+      setError("Error: " + e.message);
+      console.error("Full error:", e);
     } finally {
       setLoading(false);
     }
-  };
+  };;
 
   // ── Export helpers ────────────────────────────────────────
   const showJSON = () => setModal("json");
@@ -167,6 +304,11 @@ export default function App() {
     if (tab === "trivia") return (result.trivia || []).map((q,i) =>
       `${i+1}. ${q.question}\n${(q.options||[]).join("\n")}\nRespuesta: ${q.answer}\nExplicación: ${q.explanation}`
     ).join("\n\n");
+    if (tab === "video") {
+      const v = result.video_script;
+      if (!v) return "";
+      return `GUIÓN VIDEO — ${result.title}\n${"─".repeat(50)}\n\n🎬 HOOK (0-3s)\n${v.hook}\n\n📖 STORY (3-20s)\n${v.story}\n\n💡 INSIGHT (20-25s)\n${v.insight}\n\n📣 CTA (25-30s)\n${v.cta}\n\n${"─".repeat(50)}\nGUIÓN COMPLETO:\n${v.full_script}`;
+    }
     return "";
   };
 
@@ -175,25 +317,33 @@ export default function App() {
     if (!feedback.trim() || !result) return;
     setRefining(true); setRefineError("");
     try {
+      const baseTitle = result.title || "";
+
       setLoadingMsg("Reescribiendo artículo...");
       const raw1 = await callClaude([
-        { role:"user", content: "Artículo Don Roi existente:\nTítulo: " + result.title + "\n\n" + result.post },
-        { role:"assistant", content: "Entendido." },
-        { role:"user", content: "Reescribilo aplicando: " + feedback + "\nDevolvé JSON con SOLO: title, meta, post, image_descriptions. Sin backticks, SOLO JSON válido." }
-      ], 2000);
-      const part1 = parseJSON(raw1);
+        { role:"user", content: "Artículo Don Roi existente:\nTítulo: " + baseTitle + "\n\nPost:\n" + result.post },
+        { role:"assistant", content: "Entendido, tengo el artículo." },
+        { role:"user", content: "Reescribilo aplicando: " + feedback.trim() + "\nDevolvé SOLO el JSON: {title,meta,post,image_descriptions}" }
+      ], 3500);
+      const part1 = parseJSON(raw1, "artículo");
 
       setLoadingMsg("Regenerando tweets...");
-      const raw2 = await callClaude([{ role:"user", content:
-        `Artículo Don Roi: "${part1.title}"\n${part1.post}\n\nCreá 5 tweets en español argentino, voz Don Roi, max 260 chars c/u, con #DonRoi #OLAgg.\nDevolvé JSON con SOLO: tweets (array 5 strings). Sin backticks, SOLO JSON válido.`
-      }], 1200);
-      const part2 = parseJSON(raw2);
+      const raw2 = await callClaude([
+        { role:"user", content: `5 tweets en español argentino sobre: "${part1.title||baseTitle}". Tono Don Roi irreverente. Max 260 chars. #DonRoi #OLAgg. SOLO JSON sin backticks: {"tweets":["tweet1","tweet2","tweet3","tweet4","tweet5"]}` }
+      ], 1000, false);
+      const part2 = parseJSON(raw2, "tweets");
 
       setLoadingMsg("Regenerando trivia...");
-      const raw3 = await callClaude([{ role:"user", content:
-        `Tema: "${part1.title}". Creá 10 preguntas trivia sobre finanzas personales. Respuestas cortas (max 8 palabras). Devolvé SOLO este JSON válido sin backticks: {"trivia":[{"question":"...","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"A","explanation":"..."},...]}`
-      }], 3000);
-      const part3 = parseJSON(raw3);
+      const raw3 = await callClaude([
+        { role:"user", content: `10 preguntas trivia finanzas personales sobre: "${part1.title||baseTitle}". Opciones max 6 palabras. Distribuí A/B/C/D variado. SOLO JSON sin backticks: {"trivia":[{"question":"...","options":["A)...","B)...","C)...","D)..."],"answer":"B","explanation":"..."}]}` }
+      ], 2500, false);
+      const part3 = parseJSON(raw3, "trivia");
+
+      setLoadingMsg("Regenerando guión de video...");
+      const raw4 = await callClaude([
+        { role:"user", content: `Guión video 30s TikTok/Reels español argentino sobre: "${part1.title||baseTitle}". HOOK(0-3s) STORY(3-20s) INSIGHT(20-25s) CTA(25-30s). SOLO JSON sin backticks: {"video_script":{"hook":"...","story":"...","insight":"...","cta":"...","full_script":"..."}}` }
+      ], 1000, false);
+      const part4 = parseJSON(raw4, "video");
 
       setResult({
         ...result,
@@ -203,16 +353,15 @@ export default function App() {
         image_descriptions: part1.image_descriptions || result.image_descriptions,
         tweets:             part2.tweets             || result.tweets,
         trivia:             part3.trivia             || result.trivia,
+        video_script:       part4.video_script       || result.video_script,
       });
-      setFeedback("");
-      setShowRefine(false);
-      setLoadingMsg("");
+      setFeedback(""); setShowRefine(false); setLoadingMsg("");
     } catch(e) {
       setRefineError("Error: " + e.message);
     } finally {
       setRefining(false);
     }
-  };
+  };;
 
   // ── Render markdown ───────────────────────────────────────
   const activePost  = result?.post  || "";
@@ -257,7 +406,7 @@ export default function App() {
 
             {/* Export tabs */}
             <div style={{display:"flex",borderBottom:"1px solid #222",background:"#0A0A0A",flexWrap:"wrap"}}>
-              {[["json","📋 JSON"],["post","📰 Artículo"],["tweets","𝕏 Tweets"],["trivia","🎮 Trivia"]].map(([t,l])=>(
+              {[["json","📋 JSON"],["post","📰 Artículo"],["tweets","𝕏 Tweets"],["trivia","🎮 Trivia"],["video","🎬 Video"]].map(([t,l])=>(
                 <button key={t} onClick={()=>setExportTab(t)} style={{
                   padding:"10px 16px", border:"none", background:"transparent",
                   color: exportTab===t ? "#F59E0B" : "#6B7280",
@@ -327,9 +476,20 @@ export default function App() {
           {/* Pills */}
           {inputType==="topic" && (
             <div style={{marginBottom:16}}>
-              <div style={S.pillLbl}>SUGERENCIAS</div>
+              <div style={{display:"flex",alignItems:"center",marginBottom:9}}>
+                <div style={S.pillLbl}>SUGERENCIAS DEL DÍA</div>
+                <button onClick={refreshTopics} style={{
+                  marginLeft:"auto", background:"transparent", border:"1px solid #2A2A2A",
+                  borderRadius:6, padding:"3px 10px", color:"#6B7280", fontSize:"0.7rem",
+                  cursor:"pointer", fontFamily:"Georgia,serif", display:"flex", alignItems:"center", gap:5,
+                  transition:"all 0.15s"
+                }}
+                  onMouseEnter={e=>{e.target.style.borderColor="#F59E0B";e.target.style.color="#F59E0B";}}
+                  onMouseLeave={e=>{e.target.style.borderColor="#2A2A2A";e.target.style.color="#6B7280";}}
+                >🔀 Refrescar</button>
+              </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-                {TOPICS.map(({emoji,label})=>(
+                {topics.map(({emoji,label})=>(
                   <button key={label} onClick={()=>setInput(label)}
                     style={{...S.pill,...(input===label?S.pillOn:{})}}>{emoji} {label}</button>
                 ))}
@@ -352,8 +512,32 @@ export default function App() {
               ? <><span style={{display:"inline-block",animation:"spin 1s linear infinite"}}>⚙️</span> {loadingMsg}</>
               : "⚡  Generar artículo con Don Roi"}
           </button>
+          <button onClick={async()=>{
+            try{
+              const r=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:10,messages:[{role:"user",content:"Di solo: ok"}]})});
+              const t=await r.text();
+              alert("✅ API responde: HTTP "+r.status+"\n"+t.slice(0,150));
+            }catch(e){alert("❌ Fetch error: "+e.message);}
+          }} style={{background:"transparent",border:"1px solid #2A2A2A",borderRadius:8,color:"#555",fontSize:"0.65rem",padding:"5px 12px",cursor:"pointer",display:"block",margin:"6px auto 0",fontFamily:"monospace"}}>
+            🔌 test /api/claude
+          </button>
 
-          {error && <div style={S.errBox}><strong>⚠️ {error}</strong></div>}
+          {error && (
+            <div style={S.errBox}>
+              <strong>⚠️ {error}</strong>
+              {debugLog.length > 0 && (
+                <div style={{marginTop:10, borderTop:"1px solid #7F1D1D", paddingTop:8}}>
+                  <div style={{fontSize:"0.68rem", color:"#FCA5A5", letterSpacing:1, marginBottom:6}}>DEBUG — RESPUESTAS DE LA API:</div>
+                  {debugLog.map((d,i) => (
+                    <div key={i} style={{marginBottom:6}}>
+                      <span style={{color:"#F59E0B", fontSize:"0.7rem"}}>Paso {d.label}: </span>
+                      <span style={{fontFamily:"monospace", fontSize:"0.68rem", color:"#FCA5A5", wordBreak:"break-all"}}>{d.preview}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Result */}
@@ -465,6 +649,33 @@ export default function App() {
               </div>
             )}
 
+            {/* Video Script */}
+            {result.video_script && (
+              <div style={{...S.card, marginBottom:16}}>
+                <div style={{color:"#3D3D3D",fontSize:"0.65rem",letterSpacing:2,marginBottom:16}}>🎬  GUIÓN VIDEO — TIKTOK / REELS / SHORTS (30s)</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+                  {[
+                    ["🎣 HOOK","0–3s",result.video_script.hook,"#EF4444","#1a0500"],
+                    ["📖 STORY","3–20s",result.video_script.story,"#F59E0B","#1a1000"],
+                    ["💡 INSIGHT","20–25s",result.video_script.insight,"#60A5FA","#00050f"],
+                    ["📣 CTA","25–30s",result.video_script.cta,"#4ADE80","#001a0a"],
+                  ].map(([label,time,text,color,bg])=>(
+                    <div key={label} style={{background:bg,border:`1px solid ${color}33`,borderRadius:10,padding:"14px"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                        <span style={{color,fontSize:"0.75rem",fontWeight:700}}>{label}</span>
+                        <span style={{color:"#6B7280",fontSize:"0.68rem",fontFamily:"monospace"}}>{time}</span>
+                      </div>
+                      <div style={{color:"#D1D5DB",fontSize:"0.82rem",lineHeight:1.6}}>{text}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{background:"#0A0A0A",border:"1px solid #1F1F1F",borderRadius:8,padding:"14px"}}>
+                  <div style={{color:"#6B7280",fontSize:"0.65rem",letterSpacing:2,marginBottom:8}}>GUIÓN COMPLETO</div>
+                  <div style={{color:"#D1D5DB",fontSize:"0.82rem",lineHeight:1.8,whiteSpace:"pre-wrap",fontFamily:"Georgia,serif"}}>{result.video_script.full_script}</div>
+                </div>
+              </div>
+            )}
+
             {/* Export bar */}
             <div style={S.exportBar}>
               <div style={{color:"#3D3D3D",fontSize:"0.65rem",letterSpacing:2,marginBottom:10}}>EXPORTAR</div>
@@ -480,6 +691,9 @@ export default function App() {
                 </button>
                 <button onClick={()=>openExportModal("trivia")} style={{...S.exportBtn,...S.exportAmber}}>
                   🎮  Trivia
+                </button>
+                <button onClick={()=>openExportModal("video")} style={{...S.exportBtn, background:"#0f0005", border:"1px solid #3d0020", color:"#F472B6"}}>
+                  🎬  Guión Video
                 </button>
                 <button onClick={()=>setShowRefine(r=>!r)} style={{...S.exportBtn, background:"#1a0f1f", border:"1px solid #3d1f5d", color:"#C084FC"}}>
                   ✏️  {showRefine ? "Cerrar" : "Mejorar"}
@@ -519,7 +733,7 @@ export default function App() {
               <div>
                 <div style={{color:"#4ADE80",fontSize:"0.78rem",fontWeight:700}}>Conectar con donroi.app</div>
                 <div style={{color:"#6B7280",fontSize:"0.72rem"}}>
-                  Tenés {result.trivia?.length || 0} preguntas listas para cargar en la trivia diaria · "{(result.title||"").slice(0,45)}..."
+                  Tenés {result.trivia?.length || 0} preguntas listas · <a href="https://olagg.io/es/aprende/donroi" target="_blank" style={{color:"#4ADE80"}}>olagg.io/es/aprende/donroi</a>
                 </div>
               </div>
             </div>
