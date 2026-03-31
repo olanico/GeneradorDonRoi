@@ -50,7 +50,7 @@ Campos exactos:
   "trivia": [{"question":"...","options":["A) ...","B) ...","C) ...","D) ..."],"answer":"A","explanation":"..."}]
 }`;
 
-const ALL_TOPICS = [
+const FALLBACK_TOPICS = [
   { emoji: "🎮", label: "Gamers profesionales y su plata" },
   { emoji: "💸", label: "La guerra entre USA e Irán y tu billetera" },
   { emoji: "🍕", label: "El delivery te roba la jubilación" },
@@ -66,28 +66,15 @@ const ALL_TOPICS = [
   { emoji: "🧾", label: "Impuestos: lo que nadie te enseñó en el colegio" },
   { emoji: "🏦", label: "Por qué el banco es tu peor amigo financiero" },
   { emoji: "📉", label: "Qué hacer cuando tu país entra en recesión" },
-  { emoji: "🎮", label: "Cómo los streamers de Twitch manejan sus ingresos" },
   { emoji: "🌍", label: "Dolarizarte desde Latam: cómo y por qué" },
   { emoji: "🚀", label: "DeFi para principiantes: oportunidad real o trampa" },
   { emoji: "💡", label: "Freelancing: cómo cobrar más y ahorrar mejor" },
-  { emoji: "🎁", label: "El Black Friday y la ilusión de los descuentos" },
   { emoji: "📊", label: "ETFs: la inversión más aburrida y más rentable" },
-  { emoji: "🏋️", label: "El gym caro vs invertir esa plata — hacé las cuentas" },
   { emoji: "🎓", label: "¿Vale la pena pagar una carrera universitaria?" },
-  { emoji: "🛵", label: "Rappi, PedidosYa y el mito del ingreso extra" },
 ];
-
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
-const pickTopics = () => shuffle(ALL_TOPICS).slice(0, 8);
+const pickFallback = () => shuffle(FALLBACK_TOPICS).slice(0, 8).map(t => t.label);
 
-const LOADING_MSGS = [
-  "Don Roi abrió la notebook...",
-  "Revisando los números del mundo...",
-  "Escribiendo el artículo sin filtro...",
-  "Generando tweets para X...",
-  "Preparando trivia para donroi.app...",
-  "Escribiendo el guión del video...",
-];
 
 export default function App() {
   const [input, setInput]         = useState("");
@@ -100,14 +87,73 @@ export default function App() {
   // export modal
   const [modal, setModal] = useState(null); // null | "json"
   const [copyLabel, setCopyLabel] = useState("Copiar todo");
-  const [exportTab, setExportTab]   = useState("json");
-  const [debugLog, setDebugLog]     = useState([]);
-  const [topics, setTopics]         = useState(() => pickTopics());
-  const refreshTopics = () => setTopics(pickTopics());
+  const [exportTab, setExportTab]      = useState("json");
+  const [debugLog, setDebugLog]        = useState([]);
+  const [history, setHistory]          = useState([]);        // [{title, meta, date, id}]
+  const [showHistory, setShowHistory]  = useState(false);
+  const [topics, setTopics]            = useState(pickFallback);  // string[]
+  const [loadingSugg, setLoadingSugg]  = useState(false);
+  const [history, setHistory]          = useState([]);
+  const [showHistory, setShowHistory]  = useState(false);
   const [showRefine, setShowRefine] = useState(false);
   const [feedback, setFeedback]     = useState("");
   const [refining, setRefining]     = useState(false);
   const [refineError, setRefineError] = useState("");
+
+  // ── History & Smart Suggestions ──────────────────────────
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const r = await window.storage.get("donroi_history");
+        if (r) {
+          const h = JSON.parse(r.value);
+          setHistory(h);
+          generateSuggestions(h, false);
+        }
+      } catch(e) { /* no history yet */ }
+    };
+    load();
+  }, []);
+
+  const saveToHistory = async (article) => {
+    const entry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString("es-AR", {day:"2-digit",month:"2-digit",year:"numeric"}),
+      title: article.title,
+      meta: article.meta,
+    };
+    setHistory(prev => {
+      const updated = [entry, ...prev].slice(0, 50);
+      window.storage.set("donroi_history", JSON.stringify(updated)).catch(()=>{});
+      generateSuggestions(updated, false);
+      return updated;
+    });
+  };
+
+  const generateSuggestions = async (historyList, showLoading) => {
+    if (showLoading) setLoadingSugg(true);
+    try {
+      const used = (historyList||[]).slice(0, 15).map(h => "- " + h.title).join("\n");
+      const prompt = used
+        ? `Artículos ya publicados por Don Roi en OLAgg:\n${used}\n\nGenerá 8 temas NUEVOS y DISTINTOS, creativos y actuales, sobre finanzas personales para gamers argentinos (18-28 años). No repetir nada de la lista. SOLO JSON: {"topics":["tema 1","tema 2","tema 3","tema 4","tema 5","tema 6","tema 7","tema 8"]}`
+        : `Generá 8 temas creativos sobre finanzas personales para gamers argentinos jóvenes. SOLO JSON: {"topics":["tema 1","tema 2","tema 3","tema 4","tema 5","tema 6","tema 7","tema 8"]}`;
+      const res = await fetch("/api/claude", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:500, messages:[{role:"user",content:prompt}] })
+      });
+      const data = await res.json();
+      const raw = data.content?.[0]?.text || "";
+      const s = raw.indexOf("{"), e = raw.lastIndexOf("}");
+      if (s !== -1 && e !== -1) {
+        const parsed = JSON.parse(raw.slice(s, e+1));
+        if (parsed.topics?.length) { setTopics(parsed.topics); if(showLoading) setLoadingSugg(false); return; }
+      }
+    } catch(err) { /* use fallback */ }
+    setTopics(pickFallback());
+    if (showLoading) setLoadingSugg(false);
+  };
+
+  const refreshTopics = () => generateSuggestions(history, true);
 
   // ── Helpers ───────────────────────────────────────────────
   const callClaude = async (messages, max_tokens = 2000, useSystem = true) => {
@@ -272,6 +318,7 @@ Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin bac
 
       if (!assembled.title || !assembled.post) throw new Error("Faltan campos en la respuesta");
       setResult(assembled);
+      saveToHistory(assembled);
       setLoadingMsg("");
     } catch(e) {
       setError("Error: " + e.message);
@@ -477,21 +524,32 @@ Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin bac
           {inputType==="topic" && (
             <div style={{marginBottom:16}}>
               <div style={{display:"flex",alignItems:"center",marginBottom:9}}>
-                <div style={S.pillLbl}>SUGERENCIAS DEL DÍA</div>
-                <button onClick={refreshTopics} style={{
-                  marginLeft:"auto", background:"transparent", border:"1px solid #2A2A2A",
-                  borderRadius:6, padding:"3px 10px", color:"#6B7280", fontSize:"0.7rem",
-                  cursor:"pointer", fontFamily:"Georgia,serif", display:"flex", alignItems:"center", gap:5,
-                  transition:"all 0.15s"
-                }}
-                  onMouseEnter={e=>{e.target.style.borderColor="#F59E0B";e.target.style.color="#F59E0B";}}
-                  onMouseLeave={e=>{e.target.style.borderColor="#2A2A2A";e.target.style.color="#6B7280";}}
-                >🔀 Refrescar</button>
+                <div style={S.pillLbl}>
+                  SUGERENCIAS DEL DÍA
+                  {history.length > 0 && <span style={{color:"#4ADE80",marginLeft:6,fontSize:"0.6rem"}}>✦ IA</span>}
+                </div>
+                <div style={{marginLeft:"auto",display:"flex",gap:6,alignItems:"center"}}>
+                  {history.length > 0 && (
+                    <button onClick={()=>setShowHistory(h=>!h)} style={{
+                      background:"transparent", border:"1px solid #2A2A2A", borderRadius:6,
+                      padding:"3px 10px", color:"#6B7280", fontSize:"0.7rem", cursor:"pointer",
+                    }}>📋 Historial ({history.length})</button>
+                  )}
+                  <button onClick={refreshTopics} disabled={loadingSugg} style={{
+                    background:"transparent", border:"1px solid #2A2A2A", borderRadius:6,
+                    padding:"3px 10px", color: loadingSugg ? "#F59E0B" : "#6B7280",
+                    fontSize:"0.7rem", cursor: loadingSugg ? "wait" : "pointer",
+                    transition:"all 0.15s"
+                  }}
+                    onMouseEnter={e=>{if(!loadingSugg){e.currentTarget.style.borderColor="#F59E0B";e.currentTarget.style.color="#F59E0B";}}}
+                    onMouseLeave={e=>{if(!loadingSugg){e.currentTarget.style.borderColor="#2A2A2A";e.currentTarget.style.color="#6B7280";}}}
+                  >{loadingSugg ? "⏳ Generando..." : "🔀 Refrescar"}</button>
+                </div>
               </div>
               <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
-                {topics.map(({emoji,label})=>(
+                {topics.map((label)=>(
                   <button key={label} onClick={()=>setInput(label)}
-                    style={{...S.pill,...(input===label?S.pillOn:{})}}>{emoji} {label}</button>
+                    style={{...S.pill,...(input===label?S.pillOn:{})}}>{label}</button>
                 ))}
               </div>
             </div>
@@ -539,6 +597,32 @@ Respondé ÚNICAMENTE con este JSON exacto, sin texto antes ni después, sin bac
             </div>
           )}
         </div>
+
+        {/* History Panel */}
+        {showHistory && history.length > 0 && (
+          <div style={{background:"#0D0D0D",border:"1px solid #1F1F1F",borderRadius:14,padding:"20px",marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",marginBottom:14}}>
+              <div style={{color:"#6B7280",fontSize:"0.65rem",letterSpacing:2}}>📋  HISTORIAL DE ARTÍCULOS</div>
+              <button onClick={()=>setShowHistory(false)} style={{marginLeft:"auto",background:"transparent",border:"none",color:"#6B7280",cursor:"pointer",fontSize:"1.1rem"}}>✕</button>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:340,overflowY:"auto"}}>
+              {history.map((h) => (
+                <div key={h.id} style={{background:"#141414",border:"1px solid #222",borderRadius:10,padding:"12px 14px",cursor:"pointer",transition:"border-color 0.15s"}}
+                  onClick={()=>{setInput(h.title);setShowHistory(false);}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor="#F59E0B"}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor="#222"}
+                >
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+                    <div style={{color:"#E5E7EB",fontSize:"0.82rem",fontFamily:"Georgia,serif",lineHeight:1.4,flex:1}}>{h.title}</div>
+                    <div style={{color:"#4B5563",fontSize:"0.65rem",whiteSpace:"nowrap",marginTop:2}}>{h.date}</div>
+                  </div>
+                  {h.meta && <div style={{color:"#6B7280",fontSize:"0.72rem",marginTop:5,lineHeight:1.4}}>{h.meta.slice(0,100)}{h.meta.length>100?"...":""}</div>}
+                </div>
+              ))}
+            </div>
+            <div style={{textAlign:"center",marginTop:10,color:"#374151",fontSize:"0.65rem"}}>Click en un artículo para usarlo como base · {history.length} artículos guardados</div>
+          </div>
+        )}
 
         {/* Result */}
         {result && (
