@@ -93,8 +93,6 @@ export default function App() {
   const [showHistory, setShowHistory]  = useState(false);
   const [topics, setTopics]            = useState(pickFallback);  // string[]
   const [loadingSugg, setLoadingSugg]  = useState(false);
-  const [history, setHistory]          = useState([]);
-  const [showHistory, setShowHistory]  = useState(false);
   const [showRefine, setShowRefine] = useState(false);
   const [feedback, setFeedback]     = useState("");
   const [refining, setRefining]     = useState(false);
